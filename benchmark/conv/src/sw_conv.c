@@ -1,4 +1,5 @@
 #include "printf.h"
+#include "perf_cnt.h"
 #include "trap.h"
 #include "mul.h"
 #include "div.h"
@@ -218,7 +219,6 @@ void convolution() {
 
 }
 
-
 void pooling() {
     short* out = (short*)addr.wr_addr;
     
@@ -344,10 +344,14 @@ void pooling() {
 
 int main()
 {
+    Result res;
+    res.msec = 0;
+    bench_prepare(&res);
     printf("starting convolution\n");
     convolution();
     printf("starting pooling\n");
     pooling();
+    printf("Cycle cnt=%u\n", res.msec);
     return 0;
 }
 
