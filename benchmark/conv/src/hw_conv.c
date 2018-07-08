@@ -9,7 +9,7 @@ volatile unsigned int *ACC_ADDR = (void *)0x40040000;
 int main()
 {
 	//TODO: Please add your own software to control hardware accelerator
-    int i;
+    int i = 0;
 
     *(ACC_ADDR + HW_ACC_START) = 1;
     
