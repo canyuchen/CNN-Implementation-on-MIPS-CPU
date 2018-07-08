@@ -645,8 +645,9 @@ void pooling() {
     unsigned pad_w_test_remain = pad_w_test - mul(div(pad_w_test, stride), stride);
     unsigned pad_h_test_remain = pad_h_test - mul(div(pad_h_test, stride), stride);
 
-    short no,x,y,px,py;
+    unsigned no,x,y,px,py;
     int i = 0;
+    short max = 0;
 
     pool_out_w = div(pool_out_w, stride);
     pool_out_h = div(pool_out_h, stride);
@@ -708,14 +709,16 @@ void pooling() {
                          && ((mul(stride,y) + py) >= pad) && ((mul(stride,y) + py) < (pad+input_fm_h))
                          //&& (out[no][y][x] < out[no][mul(stride,y)+py][mul(stride,x)+px]))
                          //&& (*(*(*(out+no)+y)+x) < *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px))))
-                         && (((short)(*(out+output_offset)) < (short)(*(out+input_offset))) || ((px == 0) && (py == 0))))
+                         && ((max < (short)(*(out+input_offset))) || ((px == 0) && (py == 0))))
                         {
                             //out[no][y][x] = out[no][mul(stride,y)+py][mul(stride,x)+px];
                             //*(*(*(out+no)+y)+x) = *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px));
-                            *(out+output_offset) = (short)*(out+input_offset);
+                            max = (short)*(out+input_offset);
                         }
                     }
                 }
+
+                *(out+output_offset) = max;
 
                 i++;
                 printf("\n%d:", i);
