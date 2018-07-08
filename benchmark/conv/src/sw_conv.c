@@ -56,7 +56,7 @@ struct size_vec4 weight_size = {WEIGHT_SIZE_D0, WEIGHT_SIZE_D1, WEIGHT_SIZE_D2, 
 struct size_vec4 conv_size;
 
 
-/*
+
 void convolution() {
     short* in = (short*)addr.rd_addr;
     short* weight = (short*)addr.weight_addr;
@@ -188,8 +188,8 @@ void convolution() {
 
 
 }
-*/
 
+/*
 void convolution() {
 	short* in = (short*)addr.rd_addr;
 	short* weight = (short*)addr.weight_addr;
@@ -259,6 +259,8 @@ void convolution() {
 		bias_offset += mul(weight_size.d2, weight_size.d3) + 1;
 	}
 }
+*/
+
 
 void pooling() {
     short* out = (short*)addr.wr_addr;
