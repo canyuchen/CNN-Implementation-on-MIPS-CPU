@@ -56,175 +56,132 @@ struct size_vec4 weight_size = {WEIGHT_SIZE_D0, WEIGHT_SIZE_D1, WEIGHT_SIZE_D2, 
 struct size_vec4 conv_size;
 
 void convolution() {
-    short* in = (short*)addr.rd_addr;
-    short* weight = (short*)addr.weight_addr;
-    short* out = (short*)addr.wr_addr;
+	short* in = (short*)addr.rd_addr;
+	short* weight = (short*)addr.weight_addr;
+	short* out = (short*)addr.wr_addr;
 
-    unsigned output_offset = 0;
-    unsigned input_offset = 0;
-    
-    unsigned input_fm_w = rd_size.d3;
-    unsigned input_fm_h = rd_size.d2;
+	unsigned output_offset = 0;
+	unsigned input_offset = 0;
 
-    unsigned pad = KERN_ATTR_CONV_PAD;
-    unsigned pad_len = pad << 1;
-    
-    unsigned conv_out_w = rd_size.d3 - weight_size.d3 + pad_len;
-    unsigned conv_out_h = rd_size.d2 - weight_size.d2 + pad_len;
+	unsigned input_fm_w = rd_size.d3;
+	unsigned input_fm_h = rd_size.d2;
 
-    unsigned stride = KERN_ATTR_CONV_STRIDE;
+	unsigned pad = KERN_ATTR_CONV_PAD;
+	unsigned pad_len = pad << 1;
 
-    unsigned no, ni, x, y, kx, ky;
-    unsigned weight_offset = 0;
+	unsigned conv_out_w = rd_size.d3 - weight_size.d3 + pad_len;
+	unsigned conv_out_h = rd_size.d2 - weight_size.d2 + pad_len;
 
-    int out_store;
+	unsigned stride = KERN_ATTR_CONV_STRIDE;
 
-    conv_out_w = div(conv_out_w, stride);
-    conv_out_h = div(conv_out_h, stride);
+	conv_out_w = div(conv_out_w, stride);
+	conv_out_h = div(conv_out_h, stride);
 
-    conv_out_w++;
-    conv_out_h++;
+	conv_out_w++;
+	conv_out_h++;
 
-    conv_size.d0 = wr_size.d0;
-    conv_size.d1 = wr_size.d1;
-    conv_size.d2 = conv_out_h;
-    conv_size.d3 = conv_out_w;
-    
-    //TODO: Please add your own algorithm implementaion here
+	conv_size.d0 = wr_size.d0;
+	conv_size.d1 = wr_size.d1;
+	conv_size.d2 = conv_out_h;
+	conv_size.d3 = conv_out_w;
 
-    for (no = 0; no < wr_size.d1; ++no)
-    {
-        //weight_offset = mul(2, mul(mul(no,conv_size.d0),(1+mul(weight_size.d2,weight_size.d3))));
-        weight_offset = mul(mul(no,conv_size.d0),(1+mul(weight_size.d2,weight_size.d3)));
-        for (y = 0; y < conv_size.d2; ++y)
-        {
-            for (x = 0; x < conv_size.d3; ++x)
-            {
-                out_store = 0;
-                output_offset = mul(no, mul(conv_size.d2,conv_size.d3)) + mul(y,conv_size.d3) + x;
-
-                for (ni = 0; ni < conv_size.d0; ++ni)
-                {
-                    // weight_offset += mul(2, mul(ni,(1+mul(weight_size.d2,weight_size.d3))));
-                    // input_offset = mul(2, mul(mul(ni,input_fm_h),input_fm_w));
-                    weight_offset += mul(ni,(1+mul(weight_size.d2,weight_size.d3)));
-                    input_offset = mul(mul(ni,input_fm_h),input_fm_w);
-
-                    for (ky = 0; ky < weight_size.d2; ++ky)
-                    {
-                        for (kx = 0; kx < weight_size.d3; ++kx)
-                        {
-                            // weight_offset += 1+mul(weight_size.d3,ky)+kx;
-                            // input_offset += mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;
-                            //放到条件里面，进一步减少乘法运算
-
-                            if (((mul(stride,x) + kx) >= pad) && ((mul(stride,x) + kx) <= (pad+input_fm_w)) 
-                             && ((mul(stride,y) + ky) >= pad) && ((mul(stride,y) + ky) <= (pad+input_fm_h)))
-                            {
-                                weight_offset += 1+mul(weight_size.d3,ky)+kx;
-                                input_offset += mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;                                
-                                //out_store += mul(in[ni][y][x], weight[no][ni][1 + mul(kx,ky)]); 
-                                //out_store += mul(*(*(*(in+ni)+y)+x), *(*(*(weight+no)+ni)+(1+mul(kx,ky))));
-                                out_store += mul((*(in+input_offset)), (*(weight+weight_offset)));
-
-                            }
-                            
-                        }
-                    }
-                }
-                weight_offset = mul(mul(no,conv_size.d0),(1+mul(weight_size.d2,weight_size.d3)));
-
-                //out_store += weight[no][ni][0];
-                //out_store += *(*(*(weight+no)+ni));
-
-                out_store += (*(weight+weight_offset));
-
-                out_store >>= FRAC_BIT;
-                //out_store = ((out_store>>31)<<15) + (out_store & 0X7FFF);
-                //out_store = ((out_store & 0X80000000)>>16) + (out_store & 0X7FFF);
-                // out_store = ((out_store & 0X200000)>>16) + (out_store & 0X7FFF);
-                out_store = ((out_store & 0X200000)>>6) + (out_store & 0X7FFF);
-
-                //out[no][y][x] = out_store;
-                //*(*(*(out+no)+y)+x) = out_store;
-                (*(out+output_offset)) = out_store;
-            }
-        }
-    }
-
-
+	//TODO: Please add your own algorithm implementaion here
+	unsigned no, x, y, ni, kx, ky;
+	unsigned weight_offset, bias_offset, rd_offset, wr_offset, in_offset, out_offset;
+	int output = 0;
+	for(no = 0, wr_offset = 0, bias_offset = 0; no < conv_size.d1; no++)
+	{
+		out_offset = 0;
+		in_offset = 0;
+		for(x = 0; x < conv_out_h; x++)
+		for(y = 0; y < conv_out_w; y++)
+		{
+			for(ni=0, weight_offset = 0, rd_offset=0; ni < rd_size.d1; ni++)
+			{
+				output = 0;
+				for(kx=0; kx < weight_size.d2; kx++)
+				for(ky=0; ky < weight_size.d3; ky++)
+					if(((x + kx < input_fm_h + KERN_ATTR_CONV_PAD) & (x + kx >= KERN_ATTR_CONV_PAD)) & ((y + ky < input_fm_w + KERN_ATTR_CONV_PAD) & (y + ky >= KERN_ATTR_CONV_PAD)))
+					{
+						short a = *(weight + bias_offset + weight_offset + 1 + mul(kx, weight_size.d3) + ky);
+						short b = *(in + rd_offset + mul(kx, input_fm_w + in_offset) + mul(x, input_fm_w) + y + ky + mul(ky, input_offset));
+						output += mul(a, b);
+					}
+				weight_offset += mul(weight_size.d2, weight_size.d3) + 1;
+				rd_offset += mul(input_fm_h, input_fm_w) + mul(in_offset, input_fm_h);
+			}
+			*(out + wr_offset + mul(x, conv_out_w + out_offset) + y + mul(y, output_offset)) = (*(weight + bias_offset)) + (((short)(output >> FRAC_BIT) & 0x7fff) | ((short)(output >> 16) & 0x8000));
+		}
+		wr_offset += mul(conv_out_h, conv_out_w) + mul(mul(output_offset, conv_out_w), conv_out_h);
+		bias_offset += mul(weight_size.d2, weight_size.d3) + 1;
+	}
 }
 
 void pooling() {
-    short* out = (short*)addr.wr_addr;
-    
-    unsigned output_offset = 0;
-    unsigned input_offset = 0;
-    
-    unsigned input_fm_w = conv_size.d3;
-    unsigned input_fm_h = conv_size.d2;
-    
-    unsigned pad = KERN_ATTR_POOL_PAD;
-    unsigned pad_len = pad << 1;
-    
-    unsigned pad_w_test = conv_size.d3 - KERN_ATTR_POOL_KERN_SIZE;
-    unsigned pad_h_test = conv_size.d2 - KERN_ATTR_POOL_KERN_SIZE;
+	short* out = (short*)addr.wr_addr;
 
-    unsigned pool_out_w = pad_w_test + pad_len;
-    unsigned pool_out_h = pad_h_test + pad_len;
+	unsigned output_offset = 0;
+	unsigned input_offset = 0;
 
-    unsigned stride = KERN_ATTR_POOL_STRIDE;
+	unsigned input_fm_w = conv_size.d3;
+	unsigned input_fm_h = conv_size.d2;
 
-    unsigned pad_w_test_remain = pad_w_test - mul(div(pad_w_test, stride), stride);
-    unsigned pad_h_test_remain = pad_h_test - mul(div(pad_h_test, stride), stride);
+	unsigned pad = KERN_ATTR_POOL_PAD;
+	unsigned pad_len = pad << 1;
 
-    short no,x,y,px,py;
+	unsigned pad_w_test = conv_size.d3 - KERN_ATTR_POOL_KERN_SIZE;
+	unsigned pad_h_test = conv_size.d2 - KERN_ATTR_POOL_KERN_SIZE;
 
-    pool_out_w = div(pool_out_w, stride);
-    pool_out_h = div(pool_out_h, stride);
-    pool_out_w++;
-    pool_out_h++;
+	unsigned pool_out_w = pad_w_test + pad_len;
+	unsigned pool_out_h = pad_h_test + pad_len;
 
-    if ( (!pad) && (pad_w_test_remain || pad_h_test_remain) )
-    {
-        pool_out_w++;
-        pool_out_h++;
-    }
-    
-    //TODO: Please add your own algorithm implementaion here
-    for (no = 0; no < wr_size.d1; ++no)
-    {
-        for (y = 0; y < pool_out_h; ++y)
-        {
-            for (x = 0; x < pool_out_w; ++x)
-            {
-                output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,input_fm_w) + x;
-                input_offset = mul(no,mul(input_fm_w,input_fm_h));
+	unsigned stride = KERN_ATTR_POOL_STRIDE;
 
-                for (py = 0; py < KERN_ATTR_POOL_KERN_SIZE; ++py)
-                {
-                    for (px = 0; px < KERN_ATTR_POOL_KERN_SIZE; ++px)
-                    {
-                        input_offset += mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride)+px-pad;
+	unsigned pad_w_test_remain = pad_w_test - mul(div(pad_w_test, stride), stride);
+	unsigned pad_h_test_remain = pad_h_test - mul(div(pad_h_test, stride), stride);
 
-                        if (((mul(stride,x) + px) >= pad) && ((mul(stride,x) + px) <= (pad+input_fm_w)) 
-                         && ((mul(stride,y) + py) >= pad) && ((mul(stride,y) + py) <= (pad+input_fm_h))
-                         //&& (out[no][y][x] < out[no][mul(stride,y)+py][mul(stride,x)+px]))
-                         //&& (*(*(*(out+no)+y)+x) < *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px))))
-                         && ((*(out+output_offset)) < (*(out+input_offset))))
-                        {
-                            //out[no][y][x] = out[no][mul(stride,y)+py][mul(stride,x)+px];
-                            //*(*(*(out+no)+y)+x) = *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px));
-                            *(out+output_offset) = *(out+input_offset);
-                        }
-                    }
-                }
-            }
-        }  
-    }
+	pool_out_w = div(pool_out_w, stride);
+	pool_out_h = div(pool_out_h, stride);
+	pool_out_w++;
+	pool_out_h++;
 
+	if ( (!pad) && (pad_w_test_remain || pad_h_test_remain) )
+	{
+		pool_out_w++;
+		pool_out_h++;
+	}
 
+	//TODO: Please add your own algorithm implementaion here
+
+	int no, x, y, kx, ky;
+	short max = 0;
+	//new
+	unsigned pool_out_size = pool_out_h * pool_out_w;
+	unsigned pool_out_offset = pool_out_size * output_offset;
+	unsigned pool_in_size = input_fm_h * input_fm_w;
+	unsigned pool_in_offset = pool_in_size * input_offset;
+	//new
+
+	unsigned offset_x, offset_y;
+	offset_x = mul(mul(input_fm_w, stride), input_offset);
+	offset_y = mul(stride, input_offset);
+
+	for(no = 0; no < conv_size.d1; no++)
+	for(x = 0; x < pool_out_h; x++)
+	for(y = 0; y < pool_out_w; y++)
+	{
+		for(kx = 0; kx < KERN_ATTR_POOL_KERN_SIZE; kx++)
+		for(ky = 0; ky < KERN_ATTR_POOL_KERN_SIZE; ky++)
+		if((mul(x, stride) + kx >= KERN_ATTR_POOL_PAD) & (mul(x, stride) + kx < input_fm_h + KERN_ATTR_POOL_PAD))
+		if((mul(y, stride + offset_y) + ky >= KERN_ATTR_POOL_PAD) & (mul(y, stride + offset_y) + ky < input_fm_w + KERN_ATTR_POOL_PAD))
+		{
+			short data = *(out + mul(no, pool_in_size + pool_in_offset) + mul(x, mul(input_fm_w, stride) + offset_x) + mul(y, stride + offset_y) + mul(kx, input_fm_w + mul(input_fm_w, input_offset)) + ky + mul(ky, output_offset));
+			if((kx == 0 && ky == 0) | (data > max)) max = data;
+		}
+		*(out + mul(x, pool_out_w + mul(output_offset, pool_out_w)) + y + mul(no, pool_out_size + pool_out_offset)) = max;
+	}
 }
+
 
 int main()
 {
