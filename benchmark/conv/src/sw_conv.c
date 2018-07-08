@@ -211,7 +211,7 @@ void convolution() {
                 // *(*(*(out+no)+y)+x) = out_store;
                 (*(out+output_offset)) = (short)out_store;
 
-                printf("output_offset=%d out=%d\n", output_offset, (*(out+output_offset)));
+                //printf("output_offset=%d out=%d\n", output_offset, (*(out+output_offset)));
             }
         }
     }
