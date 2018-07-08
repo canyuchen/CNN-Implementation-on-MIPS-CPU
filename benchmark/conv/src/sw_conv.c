@@ -89,6 +89,8 @@ void convolution() {
     unsigned ky_offset_1 = 0;
     unsigned ky_offset_2 = 0;
 
+    //unsigned conv_size_area = mul(conv_size.d2,conv_size.d3);
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     unsigned conv_size_area = mul(conv_size.d2,conv_size.d3);
     unsigned weight_size_area = mul(weight_size.d2,weight_size.d3);
     unsigned input_area = mul(input_fm_h,input_fm_w);
@@ -106,6 +108,9 @@ void convolution() {
     conv_size.d1 = wr_size.d1;
     conv_size.d2 = conv_out_h;
     conv_size.d3 = conv_out_w;
+
+
+    conv_size_area = mul(conv_size.d2,conv_size.d3);
     
     //TODO: Please add your own algorithm implementaion here
 
