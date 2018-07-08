@@ -79,6 +79,19 @@ void convolution() {
     unsigned no, ni, x, y, kx, ky;
     unsigned weight_offset = 0;
     unsigned weight_offset_store = 0;
+    unsigned product_x_stride = 0;
+    unsigned product_y_stride = 0;
+    unsigned no_offset_1 = 0;
+    unsigned no_offset_2 = 0;
+    unsigned ni_offset_1 = 0;
+    unsigned ni_offset_2 = 0;
+    unsigned y_offset = 0;
+    unsigned ky_offset_1 = 0;
+    unsigned ky_offset_2 = 0;
+
+    unsigned conv_size_area = mul(conv_size.d2,conv_size.d3);
+    unsigned weight_size_area = mul(weight_size.d2,weight_size.d3);
+    unsigned input_area = mul(input_fm_h,input_fm_w);
 
     int out_store;
     int i = 0;
@@ -99,15 +112,20 @@ void convolution() {
     for (no = 0; no < wr_size.d1; ++no)
     {
         //weight_offset = mul(2, mul(mul(no,conv_size.d0),(1+mul(weight_size.d2,weight_size.d3))));
-        weight_offset_store = mul(mul(no,conv_size.d0),(1+mul(weight_size.d2,weight_size.d3)));
+        no_offset_1 = mul(no,conv_size.d0);
+        no_offset_2 = mul(no, conv_size_area);
+        weight_offset_store = mul(no_offset_1,(1+mul(weight_size.d2,weight_size.d3)));
         // weight_offset_store = weight_offset;
 
         for (y = 0; y < conv_size.d2; ++y)
         {
+            product_y_stride = mul(stride,y);
+            y_offset = mul(y,conv_size.d3);
             for (x = 0; x < conv_size.d3; ++x)
             {
+                product_x_stride = mul(stride,x);
                 out_store = 0;
-                output_offset = mul(no, mul(conv_size.d2,conv_size.d3)) + mul(y,conv_size.d3) + x;
+                output_offset = no_offset_2 + y_offset + x;
 
                 for (ni = 0; ni < conv_size.d0; ++ni)
                 {
@@ -118,9 +136,13 @@ void convolution() {
                     //weight_offset += 1+mul(weight_size.d2,weight_size.d3);
 
                     //input_offset = mul(mul(ni,input_fm_h),input_fm_w);
+                    ni_offset_1 = mul(ni,(1+weight_size_area));
+                    ni_offset_2 = mul(ni,input_area);
 
                     for (ky = 0; ky < weight_size.d2; ++ky)
                     {
+                        ky_offset_1 = mul(weight_size.d3,ky);
+                        ky_offset_2 = mul(input_fm_w,(product_y_stride + ky - pad));
                         for (kx = 0; kx < weight_size.d3; ++kx)
                         {
                             // weight_offset += 1+mul(weight_size.d3,ky)+kx;
@@ -131,17 +153,17 @@ void convolution() {
 
                             //weight_offset += 1+mul(weight_size.d3,ky)+kx;
 
-                            weight_offset = weight_offset_store + mul(ni,(1+mul(weight_size.d2,weight_size.d3))) + 1+mul(weight_size.d3,ky)+kx;
+                            weight_offset = weight_offset_store + ni_offset_1 + 1 + ky_offset_1 + kx;
                             
                             //input_offset += mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;                             
-                            input_offset = mul(mul(ni,input_fm_h),input_fm_w) + mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;
+                            input_offset = ni_offset_2 + ky_offset_2 + product_x_stride + kx - pad;
 
 
                             // if (((mul(stride,x) + kx) >= pad) && ((mul(stride,x) + kx) <= (pad+input_fm_w)) 
                             //  && ((mul(stride,y) + ky) >= pad) && ((mul(stride,y) + ky) <= (pad+input_fm_h)))
 
-                            if (((mul(stride,x) + kx) >= pad) && ((mul(stride,x) + kx) < (pad+input_fm_w)) 
-                             && ((mul(stride,y) + ky) >= pad) && ((mul(stride,y) + ky) < (pad+input_fm_h)))
+                            if (((product_x_stride + kx) >= pad) && ((product_x_stride + kx) < (pad+input_fm_w)) 
+                             && ((product_y_stride + ky) >= pad) && ((product_y_stride + ky) < (pad+input_fm_h)))
                             {
                                 // weight_offset += 1+mul(weight_size.d3,ky)+kx;
                                 // input_offset += mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;                           
