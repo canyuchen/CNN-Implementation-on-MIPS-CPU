@@ -422,7 +422,8 @@ void pooling() {
 //     short no,x,y,px,py;
 //     int i = 0;
 
-//     unsigned input_area = mul(input_fm_w,input_fm_h);
+//     //unsigned input_area = mul(input_fm_w,input_fm_h);
+//     unsigned pool_out_area = 0;
 //     unsigned y_offset = 0;
 //     unsigned no_offset = 0;
 //     unsigned product_y_stride = 0;
@@ -441,11 +442,13 @@ void pooling() {
 //         pool_out_w++;
 //         pool_out_h++;
 //     }
+
+//     pool_out_area = mul(pool_out_w, pool_out_h);
     
 //     //TODO: Please add your own algorithm implementaion here
 //     for (no = 0; no < wr_size.d1; ++no)
 //     {
-//         no_offset = mul(no,input_area);
+//         no_offset = mul(no,pool_out_area);
 
 //         for (y = 0; y < pool_out_h; ++y)
 //         {
@@ -560,10 +563,10 @@ void pooling() {
             {
                 //output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,input_fm_w) + x;
 
-                //output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,pool_out_w) + x;
+                output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,pool_out_w) + x;
                 //!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                output_offset = mul(no,mul(pool_out_w, pool_out_h)) + mul(y,pool_out_w) + x;
+                //output_offset = mul(no,mul(pool_out_w, pool_out_h)) + mul(y,pool_out_w) + x;
                 // input_offset = mul(no,mul(input_fm_w,input_fm_h));
                 //input_offset = mul(no,mul(input_fm_w,input_fm_h));
                  // *(out+output_offset) = *(out + input_offset + mul(input_fm_w,(mul(y,stride)-pad)) + mul(x,stride)-pad);
