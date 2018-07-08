@@ -311,7 +311,10 @@ void pooling() {
                 output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,pool_out_w) + x;
                 // input_offset = mul(no,mul(input_fm_w,input_fm_h));
                 //input_offset = mul(no,mul(input_fm_w,input_fm_h));
-                 *(out+output_offset) = *(out + input_offset + mul(input_fm_w,(mul(y,stride)-pad)) + mul(x,stride)-pad);
+                 // *(out+output_offset) = *(out + input_offset + mul(input_fm_w,(mul(y,stride)-pad)) + mul(x,stride)-pad);
+                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                *(out+output_offset) = *(out + mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,(mul(y,stride)-pad)) + mul(x,stride)-pad);
 
                 for (py = 0; py < KERN_ATTR_POOL_KERN_SIZE; ++py)
                 {
@@ -320,7 +323,7 @@ void pooling() {
                         //input_offset += mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride)+px-pad;
 
                         input_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride)+px-pad;
-                        //printf("%d", *(out+input_offset));
+                        printf("%d", *(out+input_offset));
 
                         // if (((mul(stride,x) + px) >= pad) && ((mul(stride,x) + px) <= (pad+input_fm_w)) 
                         //  && ((mul(stride,y) + py) >= pad) && ((mul(stride,y) + py) <= (pad+input_fm_h))
