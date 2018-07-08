@@ -353,9 +353,9 @@ int main()
     pooling();
     bench_done(&res);
     printf("Cycle cnt=%u\n", res.msec);
-    printf("read_mem_cycle cnt=%u\n", res.read_mem_cycle);
-    printf("write_mem_cycle cnt=%u\n", res.write_mem_cycle);
-    printf("mem_cycle cnt=%u\n", res.mem_cycle);
+    //printf("read_mem_cycle cnt=%u\n", res.read_mem_cycle);
+    //printf("write_mem_cycle cnt=%u\n", res.write_mem_cycle);
+    //printf("mem_cycle cnt=%u\n", res.mem_cycle);
     return 0;
 }
 
