@@ -1,8 +1,0 @@
-# compile vhdl design source files
-vhdl xil_defaultlib  "../../../prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_mips_bram_ctrl_0/sim/bram_bd_mips_bram_ctrl_0.vhd"
-vhdl xil_defaultlib  "../../../prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_weight_bram_ctrl_0/sim/bram_bd_weight_bram_ctrl_0.vhd"
-vhdl xil_defaultlib  "../../../prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_data_bram_ctrl_0/sim/bram_bd_data_bram_ctrl_0.vhd"
-vhdl xil_defaultlib  "../../../prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_axi_uart_0/sim/bram_bd_axi_uart_0.vhd"
-
-# Do not sort compile order
-nosort
