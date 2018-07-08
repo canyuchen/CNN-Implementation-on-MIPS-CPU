@@ -11,9 +11,9 @@ int main()
 	//TODO: Please add your own software to control hardware accelerator
     int i = 0;
 
-    *(ACC_ADDR + HW_ACC_START) = 1;
+    *(ACC_ADDR + (HW_ACC_START>>2)) = 1;
     
-    while(!(*(ACC_ADDR + HW_ACC_DONE)))
+    while(!(*(ACC_ADDR + (HW_ACC_DONE>>2))))
     {
         ++i;
     }
