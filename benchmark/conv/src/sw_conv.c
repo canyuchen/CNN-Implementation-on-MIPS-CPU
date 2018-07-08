@@ -147,7 +147,7 @@ void convolution() {
                                 //out_store += mul(in[ni][y][x], weight[no][ni][1 + mul(kx,ky)]); 
                                 //out_store += mul(*(*(*(in+ni)+y)+x), *(*(*(weight+no)+ni)+(1+mul(kx,ky))));
                                 out_store += mul((short)(*(in+input_offset)), (short)(*(weight+weight_offset)));
-                                printf("in=%d weight=%d in_offset=%d weight_offset=%d\n", (short)(*(in+input_offset)), (short)(*(weight+weight_offset)), input_offset, weight_offset);
+                                //printf("in=%d weight=%d in_offset=%d weight_offset=%d\n", (short)(*(in+input_offset)), (short)(*(weight+weight_offset)), input_offset, weight_offset);
 
                             }
                             
@@ -168,9 +168,10 @@ void convolution() {
                 //out_store = ((out_store & 0X200000)>>6) + (out_store & 0X7FFF);
                 //out_store = (((out_store & 0X200000)>>6) + (out_store & 0X7FFF));
 
-                out_store = (((short)(((out_store>>FRAC_BIT) & 0X200000)>>6)) | ((short)((out_store>>FRAC_BIT) & 0X7FFF))) + (*(weight+weight_offset_store));
+                //out_store = (((short)(((out_store>>FRAC_BIT) & 0X200000)>>6)) | ((short)((out_store>>FRAC_BIT) & 0X7FFF))) + (*(weight+weight_offset_store));
+                out_store = (((short)(out_store >> FRAC_BIT) & 0x7fff) | ((short)(out_store >> 16) & 0x8000)) + (*(weight+weight_offset_store));
 
-                printf("=>%d %d\n", (*(weight+weight_offset_store)), (((short)(((out_store>>FRAC_BIT) & 0X200000)>>6)) | ((short)((out_store>>FRAC_BIT) & 0X7FFF))));
+                //printf("=>%d %d\n", (*(weight+weight_offset_store)), (((short)(out_store >> FRAC_BIT) & 0x7fff) + ((short)(out_store >> 16) & 0x8000)));
 
                 i++;
                 printf("%d:", i);
