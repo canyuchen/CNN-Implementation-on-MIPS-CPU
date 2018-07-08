@@ -351,6 +351,7 @@ int main()
     convolution();
     printf("starting pooling\n");
     pooling();
+    bench_done(&res);
     printf("Cycle cnt=%u\n", res.msec);
     return 0;
 }
