@@ -1,0 +1,8 @@
+INFO: [VRFC 10-163] Analyzing VHDL file "/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_mips_bram_ctrl_0/sim/bram_bd_mips_bram_ctrl_0.vhd" into library xil_defaultlib
+INFO: [VRFC 10-307] analyzing entity bram_bd_mips_bram_ctrl_0
+INFO: [VRFC 10-163] Analyzing VHDL file "/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_weight_bram_ctrl_0/sim/bram_bd_weight_bram_ctrl_0.vhd" into library xil_defaultlib
+INFO: [VRFC 10-307] analyzing entity bram_bd_weight_bram_ctrl_0
+INFO: [VRFC 10-163] Analyzing VHDL file "/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_data_bram_ctrl_0/sim/bram_bd_data_bram_ctrl_0.vhd" into library xil_defaultlib
+INFO: [VRFC 10-307] analyzing entity bram_bd_data_bram_ctrl_0
+INFO: [VRFC 10-163] Analyzing VHDL file "/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_axi_uart_0/sim/bram_bd_axi_uart_0.vhd" into library xil_defaultlib
+INFO: [VRFC 10-307] analyzing entity bram_bd_axi_uart_0

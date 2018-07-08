@@ -141,7 +141,8 @@ void convolution() {
 
                 out_store >>= FRAC_BIT;
                 //out_store = ((out_store>>31)<<15) + (out_store & 0X7FFF);
-                out_store = ((out_store & 0X80000000)>>16) + (out_store & 0X7FFF);
+                //out_store = ((out_store & 0X80000000)>>16) + (out_store & 0X7FFF);
+                out_store = ((out_store & 0X200000)>>16) + (out_store & 0X7FFF);
 
                 //out[no][y][x] = out_store;
                 //*(*(*(out+no)+y)+x) = out_store;

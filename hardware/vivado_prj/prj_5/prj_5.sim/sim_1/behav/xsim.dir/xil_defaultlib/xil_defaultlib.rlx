@@ -1,0 +1,20 @@
+0.6
+2017.2
+Jun 15 2017
+18:41:53
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/sources/hdl/mips_cpu_fpga.v,1529127864,verilog,,,,mips_cpu_fpga,,,../../../prj_5.srcs/sources_1/bd/bram_bd/ipshared/7e3a/hdl,MIPS_CPU_FULL_SIMU=;UART_SIM=,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/sources/hdl/mips_cpu_top.v,1529127864,verilog,,,,mips_cpu_top,,,../../../prj_5.srcs/sources_1/bd/bram_bd/ipshared/7e3a/hdl,MIPS_CPU_FULL_SIMU=;UART_SIM=,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/sources/ip_catalog/mips_core/mips_cpu.v,1529138064,verilog,,,,alu;barrel_shifter;control_unit;mips_cpu;reg_file,,,../../../prj_5.srcs/sources_1/bd/bram_bd/ipshared/7e3a/hdl,MIPS_CPU_FULL_SIMU=;UART_SIM=,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/sources/testbench/mips_cpu_test.v,1529127864,verilog,,,,mips_cpu_test,,,../../../prj_5.srcs/sources_1/bd/bram_bd/ipshared/7e3a/hdl,MIPS_CPU_FULL_SIMU=;UART_SIM=,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/sources/testbench/uart_recv_sim.v,1529127864,verilog,,,,uart_recv_sim,,,../../../prj_5.srcs/sources_1/bd/bram_bd/ipshared/7e3a/hdl,MIPS_CPU_FULL_SIMU=;UART_SIM=,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/hdl/bram_bd.v,1531025198,verilog,,,,bram_bd;bram_bd_axi4_to_lite_ic_0;m00_couplers_imp_1A44LW3;m01_couplers_imp_9BGN80;m02_couplers_imp_VNBXUC;m03_couplers_imp_1W5U1JR;s00_couplers_imp_96428F,,,../../../prj_5.srcs/sources_1/bd/bram_bd/ipshared/7e3a/hdl,MIPS_CPU_FULL_SIMU=;UART_SIM=,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_axi_uart_0/sim/bram_bd_axi_uart_0.vhd,1531025200,vhdl,,,,bram_bd_axi_uart_0,,,,,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_data_bram_0/sim/bram_bd_data_bram_0.v,1531025200,verilog,,,,bram_bd_data_bram_0,,,../../../prj_5.srcs/sources_1/bd/bram_bd/ipshared/7e3a/hdl,MIPS_CPU_FULL_SIMU=;UART_SIM=,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_data_bram_ctrl_0/sim/bram_bd_data_bram_ctrl_0.vhd,1531025199,vhdl,,,,bram_bd_data_bram_ctrl_0,,,,,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_mips_bram_0/sim/bram_bd_mips_bram_0.v,1531025199,verilog,,,,bram_bd_mips_bram_0,,,../../../prj_5.srcs/sources_1/bd/bram_bd/ipshared/7e3a/hdl,MIPS_CPU_FULL_SIMU=;UART_SIM=,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_mips_bram_ctrl_0/sim/bram_bd_mips_bram_ctrl_0.vhd,1531025199,vhdl,,,,bram_bd_mips_bram_ctrl_0,,,,,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_weight_bram_0/sim/bram_bd_weight_bram_0.v,1531025199,verilog,,,,bram_bd_weight_bram_0,,,../../../prj_5.srcs/sources_1/bd/bram_bd/ipshared/7e3a/hdl,MIPS_CPU_FULL_SIMU=;UART_SIM=,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_weight_bram_ctrl_0/sim/bram_bd_weight_bram_ctrl_0.vhd,1531025199,vhdl,,,,bram_bd_weight_bram_ctrl_0,,,,,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.ip_user_files/bd/bram_bd/ip/bram_bd_xbar_0/sim/bram_bd_xbar_0.v,1531025201,verilog,,,,bram_bd_xbar_0,,,../../../prj_5.srcs/sources_1/bd/bram_bd/ipshared/7e3a/hdl,MIPS_CPU_FULL_SIMU=;UART_SIM=,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.sim/sim_1/behav/glbl.v,1497407496,verilog,,,,glbl,,,,,,,,
+/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.srcs/sources_1/imports/hdl/bram_bd_wrapper.v,1531025198,verilog,,,,bram_bd_wrapper,,,../../../prj_5.srcs/sources_1/bd/bram_bd/ipshared/7e3a/hdl,MIPS_CPU_FULL_SIMU=;UART_SIM=,,,,

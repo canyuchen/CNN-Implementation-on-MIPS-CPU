@@ -1,14 +1,3 @@
 Starting xl2tpd (via systemctl): xl2tpd.service.
-Remote target: root@172.16.15.66
-Try to reboot 172.16.15.66
-Waiting for target reboot...
-Completed FPGA configuration
-Evaluating convolution benchmark suite...
-Launching sw_conv benchmark...
-Initializing read image data
-Initializing weights
-starting convolution
-Hit bad trap
-pass 0 / 1
-Stopping xl2tpd (via systemctl): xl2tpd.service.
-2018年 07月 08日 星期日 12:38:02 CST
+Error: No allocated IP address. Please try again
+2018年 07月 08日 星期日 12:52:07 CST
