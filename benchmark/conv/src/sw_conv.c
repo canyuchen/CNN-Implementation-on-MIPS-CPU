@@ -570,7 +570,8 @@ void pooling() {
                     {
                         //input_offset += mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride)+px-pad;
 
-                        input_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride) + px-pad;
+                        // input_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride) + px-pad;
+                        input_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,y+py) + x + px;
                         printf("%d ", *(out+input_offset));
 
                         // if (((mul(stride,x) + px) >= pad) && ((mul(stride,x) + px) <= (pad+input_fm_w)) 
