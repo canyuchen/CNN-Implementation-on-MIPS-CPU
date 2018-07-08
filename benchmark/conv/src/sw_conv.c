@@ -517,6 +517,111 @@ void pooling() {
 // }
 
 
+// void pooling() {
+//     short* out = (short*)addr.wr_addr;
+    
+//     unsigned output_offset = 0;
+//     unsigned input_offset = 0;
+    
+//     unsigned input_fm_w = conv_size.d3;
+//     unsigned input_fm_h = conv_size.d2;
+    
+//     unsigned pad = KERN_ATTR_POOL_PAD;
+//     unsigned pad_len = pad << 1;
+    
+//     unsigned pad_w_test = conv_size.d3 - KERN_ATTR_POOL_KERN_SIZE;
+//     unsigned pad_h_test = conv_size.d2 - KERN_ATTR_POOL_KERN_SIZE;
+
+//     unsigned pool_out_w = pad_w_test + pad_len;
+//     unsigned pool_out_h = pad_h_test + pad_len;
+
+//     unsigned stride = KERN_ATTR_POOL_STRIDE;
+
+//     unsigned pad_w_test_remain = pad_w_test - mul(div(pad_w_test, stride), stride);
+//     unsigned pad_h_test_remain = pad_h_test - mul(div(pad_h_test, stride), stride);
+
+//     short no,x,y,px,py;
+//     int i = 0;
+
+//     pool_out_w = div(pool_out_w, stride);
+//     pool_out_h = div(pool_out_h, stride);
+//     pool_out_w++;
+//     pool_out_h++;
+
+//     if ( (!pad) && (pad_w_test_remain || pad_h_test_remain) )
+//     {
+//         pool_out_w++;
+//         pool_out_h++;
+//     }
+    
+//     //TODO: Please add your own algorithm implementaion here
+//     for (no = 0; no < wr_size.d1; ++no)
+//     {
+//         for (y = 0; y < pool_out_h; ++y)
+//         {
+//             for (x = 0; x < pool_out_w; ++x)
+//             {
+//                 //output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,input_fm_w) + x;
+
+//                 output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,pool_out_w) + x;
+//                 //!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+//                 //output_offset = mul(no,mul(pool_out_w, pool_out_h)) + mul(y,pool_out_w) + x;
+//                 // input_offset = mul(no,mul(input_fm_w,input_fm_h));
+//                 //input_offset = mul(no,mul(input_fm_w,input_fm_h));
+//                  // *(out+output_offset) = *(out + input_offset + mul(input_fm_w,(mul(y,stride)-pad)) + mul(x,stride)-pad);
+//                 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+//                 *(out+output_offset) = *(out + mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,(mul(y,stride)-pad)) + mul(x,stride)-pad);
+
+//                 for (py = 0; py < KERN_ATTR_POOL_KERN_SIZE; ++py)
+//                 {
+//                     for (px = 0; px < KERN_ATTR_POOL_KERN_SIZE; ++px)
+//                     {
+//                         //input_offset += mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride)+px-pad;
+
+//                         // input_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride) + px-pad;
+//                         input_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,y+py) + x + px;
+//                         printf("%d ", *(out+input_offset));
+
+//                         // if (((mul(stride,x) + px) >= pad) && ((mul(stride,x) + px) <= (pad+input_fm_w)) 
+//                         //  && ((mul(stride,y) + py) >= pad) && ((mul(stride,y) + py) <= (pad+input_fm_h))
+
+//                         // if (((mul(stride,x) + px) >= pad) && ((mul(stride,x) + px) < (pad+input_fm_w)) 
+//                         //  && ((mul(stride,y) + py) >= pad) && ((mul(stride,y) + py) < (pad+input_fm_h))
+//                         //  //&& (out[no][y][x] < out[no][mul(stride,y)+py][mul(stride,x)+px]))
+//                         //  //&& (*(*(*(out+no)+y)+x) < *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px))))
+//                         //  && ((*(out+output_offset)) < (*(out+input_offset))))
+//                         // {
+//                         //     //out[no][y][x] = out[no][mul(stride,y)+py][mul(stride,x)+px];
+//                         //     //*(*(*(out+no)+y)+x) = *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px));
+//                         //     *(out+output_offset) = *(out+input_offset);
+//                         // }
+
+
+//                         if (((mul(stride,x) + px) >= pad) && ((mul(stride,x) + px) < (pad+input_fm_w)) 
+//                          && ((mul(stride,y) + py) >= pad) && ((mul(stride,y) + py) < (pad+input_fm_h))
+//                          //&& (out[no][y][x] < out[no][mul(stride,y)+py][mul(stride,x)+px]))
+//                          //&& (*(*(*(out+no)+y)+x) < *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px))))
+//                          && ((*(out+output_offset)) < (*(out+input_offset))))
+//                         {
+//                             //out[no][y][x] = out[no][mul(stride,y)+py][mul(stride,x)+px];
+//                             //*(*(*(out+no)+y)+x) = *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px));
+//                             *(out+output_offset) = *(out+input_offset);
+//                         }
+//                     }
+//                 }
+
+//                 i++;
+//                 printf("\n%d:", i);
+//                 printf("%d output_offset =%d input_offset =%d x=%d\n ", *(out+output_offset), output_offset, input_offset, x);
+//             }
+//         }  
+//     }
+
+
+// }
+
 void pooling() {
     short* out = (short*)addr.wr_addr;
     
@@ -563,16 +668,16 @@ void pooling() {
             {
                 //output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,input_fm_w) + x;
 
-                output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,pool_out_w) + x;
+                //output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,pool_out_w) + x;
                 //!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                //output_offset = mul(no,mul(pool_out_w, pool_out_h)) + mul(y,pool_out_w) + x;
+                output_offset = mul(no,mul(pool_out_w, pool_out_h)) + mul(y,pool_out_w) + x;
                 // input_offset = mul(no,mul(input_fm_w,input_fm_h));
                 //input_offset = mul(no,mul(input_fm_w,input_fm_h));
                  // *(out+output_offset) = *(out + input_offset + mul(input_fm_w,(mul(y,stride)-pad)) + mul(x,stride)-pad);
                 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                *(out+output_offset) = *(out + mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,(mul(y,stride)-pad)) + mul(x,stride)-pad);
+                //*(out+output_offset) = *(out + mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,(mul(y,stride)-pad)) + mul(x,stride)-pad);
 
                 for (py = 0; py < KERN_ATTR_POOL_KERN_SIZE; ++py)
                 {
@@ -603,7 +708,7 @@ void pooling() {
                          && ((mul(stride,y) + py) >= pad) && ((mul(stride,y) + py) < (pad+input_fm_h))
                          //&& (out[no][y][x] < out[no][mul(stride,y)+py][mul(stride,x)+px]))
                          //&& (*(*(*(out+no)+y)+x) < *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px))))
-                         && ((*(out+output_offset)) < (*(out+input_offset))))
+                         && (((*(out+output_offset)) < (*(out+input_offset))) || ((px == 0) && (py == 0))))
                         {
                             //out[no][y][x] = out[no][mul(stride,y)+py][mul(stride,x)+px];
                             //*(*(*(out+no)+y)+x) = *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px));
