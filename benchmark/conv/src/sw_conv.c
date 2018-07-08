@@ -56,7 +56,7 @@ struct size_vec4 weight_size = {WEIGHT_SIZE_D0, WEIGHT_SIZE_D1, WEIGHT_SIZE_D2, 
 struct size_vec4 conv_size;
 
 
-
+/*
 void convolution() {
     short* in = (short*)addr.rd_addr;
     short* weight = (short*)addr.weight_addr;
@@ -189,7 +189,7 @@ void convolution() {
 
 }
 
-/*
+*/
 void convolution() {
 	short* in = (short*)addr.rd_addr;
 	short* weight = (short*)addr.weight_addr;
@@ -259,7 +259,7 @@ void convolution() {
 		bias_offset += mul(weight_size.d2, weight_size.d3) + 1;
 	}
 }
-*/
+
 
 
 void pooling() {
@@ -320,7 +320,7 @@ void pooling() {
                         //input_offset += mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride)+px-pad;
 
                         input_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride)+px-pad;
-                        printf("%d", *(out+input_offset));
+                        //printf("%d", *(out+input_offset));
 
                         // if (((mul(stride,x) + px) >= pad) && ((mul(stride,x) + px) <= (pad+input_fm_w)) 
                         //  && ((mul(stride,y) + py) >= pad) && ((mul(stride,y) + py) <= (pad+input_fm_h))
