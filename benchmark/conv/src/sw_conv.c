@@ -55,6 +55,8 @@ struct size_vec4 weight_size = {WEIGHT_SIZE_D0, WEIGHT_SIZE_D1, WEIGHT_SIZE_D2, 
     
 struct size_vec4 conv_size;
 
+
+/*
 void convolution() {
     short* in = (short*)addr.rd_addr;
     short* weight = (short*)addr.weight_addr;
@@ -178,13 +180,84 @@ void convolution() {
                 printf("%d\n", out_store);
 
                 //out[no][y][x] = out_store;
-                //*(*(*(out+no)+y)+x) = out_store;
+                // *(*(*(out+no)+y)+x) = out_store;
                 (*(out+output_offset)) = (short)out_store;
             }
         }
     }
 
 
+}
+*/
+
+void convolution() {
+	short* in = (short*)addr.rd_addr;
+	short* weight = (short*)addr.weight_addr;
+	short* out = (short*)addr.wr_addr;
+
+	unsigned output_offset = 0;
+	unsigned input_offset = 0;
+
+	unsigned input_fm_w = rd_size.d3;
+	unsigned input_fm_h = rd_size.d2;
+
+	unsigned pad = KERN_ATTR_CONV_PAD;
+	unsigned pad_len = pad << 1;
+
+	unsigned conv_out_w = rd_size.d3 - weight_size.d3 + pad_len;
+	unsigned conv_out_h = rd_size.d2 - weight_size.d2 + pad_len;
+
+	unsigned stride = KERN_ATTR_CONV_STRIDE;
+	int p;
+
+	conv_out_w = div(conv_out_w, stride);
+	conv_out_h = div(conv_out_h, stride);
+
+	conv_out_w++;
+	conv_out_h++;
+
+	conv_size.d0 = wr_size.d0;
+	conv_size.d1 = wr_size.d1;
+	conv_size.d2 = conv_out_h;
+	conv_size.d3 = conv_out_w;
+
+	//TODO: Please add your own algorithm implementaion here
+	unsigned no, x, y, ni, kx, ky;
+	unsigned weight_offset, bias_offset, rd_offset, wr_offset, in_offset, out_offset;
+	int output = 0;
+	int i = 0;
+	for(no = 0, wr_offset = 0, bias_offset = 0; no < conv_size.d1; no++)
+	{
+		out_offset = 0;
+		in_offset = 0;
+		for(x = 0; x < conv_out_h; x++)
+		for(y = 0; y < conv_out_w; y++)
+		{
+			for(ni=0, weight_offset = 0, rd_offset=0; ni < rd_size.d1; ni++)
+			{
+				output = 0;
+				for(kx=0; kx < weight_size.d2; kx++)
+				for(ky=0; ky < weight_size.d3; ky++)
+					if(((x + kx < input_fm_h + KERN_ATTR_CONV_PAD) & (x + kx >= KERN_ATTR_CONV_PAD)) & ((y + ky < input_fm_w + KERN_ATTR_CONV_PAD) & (y + ky >= KERN_ATTR_CONV_PAD)))
+					{
+						short a = *(weight + bias_offset + weight_offset + 1 + mul(kx, weight_size.d3) + ky);
+						short b = *(in + rd_offset + mul(kx, input_fm_w + in_offset) + mul(x, input_fm_w) + y + ky + mul(ky, input_offset));
+						output += mul(a, b);
+						//printf("in=%d weight=%d in_offset=%d weight_offset=%d\n",b, a, (rd_offset + mul(kx, input_fm_w + in_offset) + mul(x, input_fm_w) + y + ky + mul(ky, input_offset)), (bias_offset + weight_offset + 1 + mul(kx, weight_size.d3) + ky));
+					}
+				weight_offset += mul(weight_size.d2, weight_size.d3) + 1;
+				rd_offset += mul(input_fm_h, input_fm_w) + mul(in_offset, input_fm_h);
+			}
+			p = (*(weight + bias_offset)) + (((short)(output >> FRAC_BIT) & 0x7fff) | ((short)(output >> 16) & 0x8000));
+			//printf("=>%d %d\n",(*(weight + bias_offset)), (((short)(output >> FRAC_BIT) & 0x7fff) | ((short)(output >> 16) & 0x8000)));
+			i++;
+			printf("%d:",i);
+			printf("%d\n",p);
+			*(out + wr_offset + mul(x, conv_out_w + out_offset) + y + mul(y, output_offset)) = p;
+		}
+		wr_offset += mul(conv_out_h, conv_out_w) + mul(mul(output_offset, conv_out_w), conv_out_h);
+		bias_offset += mul(weight_size.d2, weight_size.d3) + 1;
+	}
 }
 
 void pooling() {
