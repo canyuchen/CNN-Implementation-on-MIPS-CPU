@@ -97,8 +97,8 @@ void convolution() {
     for (no = 0; no < wr_size.d1; ++no)
     {
         //weight_offset = mul(2, mul(mul(no,conv_size.d0),(1+mul(weight_size.d2,weight_size.d3))));
-        weight_offset = mul(mul(no,conv_size.d0),(1+mul(weight_size.d2,weight_size.d3)));
-        weight_offset_store = weight_offset;
+        weight_offset_store = mul(mul(no,conv_size.d0),(1+mul(weight_size.d2,weight_size.d3)));
+        // weight_offset_store = weight_offset;
 
         for (y = 0; y < conv_size.d2; ++y)
         {
@@ -111,8 +111,11 @@ void convolution() {
                 {
                     // weight_offset += mul(2, mul(ni,(1+mul(weight_size.d2,weight_size.d3))));
                     // input_offset = mul(2, mul(mul(ni,input_fm_h),input_fm_w));
-                    weight_offset += mul(ni,(1+mul(weight_size.d2,weight_size.d3)));
-                    input_offset = mul(mul(ni,input_fm_h),input_fm_w);
+                    //weight_offset += mul(ni,(1+mul(weight_size.d2,weight_size.d3)));
+
+                    //weight_offset += 1+mul(weight_size.d2,weight_size.d3);
+
+                    //input_offset = mul(mul(ni,input_fm_h),input_fm_w);
 
                     for (ky = 0; ky < weight_size.d2; ++ky)
                     {
@@ -122,8 +125,15 @@ void convolution() {
                             // input_offset += mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;
                             //放到条件里面，进一步减少乘法运算
                             //!!!!!!!!!!!!!!!!!!!!!!!!!!
-                            weight_offset += 1+mul(weight_size.d3,ky)+kx;
-                            input_offset += mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;                             
+
+
+                            //weight_offset += 1+mul(weight_size.d3,ky)+kx;
+
+                            weight_offset = weight_offset_store + mul(ni,(1+mul(weight_size.d2,weight_size.d3))) + 1+mul(weight_size.d3,ky)+kx;
+                            
+                            //input_offset += mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;                             
+                            input_offset = mul(mul(ni,input_fm_h),input_fm_w) + mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;
+
 
                             // if (((mul(stride,x) + kx) >= pad) && ((mul(stride,x) + kx) <= (pad+input_fm_w)) 
                             //  && ((mul(stride,y) + ky) >= pad) && ((mul(stride,y) + ky) <= (pad+input_fm_h)))
@@ -136,7 +146,8 @@ void convolution() {
 
                                 //out_store += mul(in[ni][y][x], weight[no][ni][1 + mul(kx,ky)]); 
                                 //out_store += mul(*(*(*(in+ni)+y)+x), *(*(*(weight+no)+ni)+(1+mul(kx,ky))));
-                                out_store += mul((*(in+input_offset)), (*(weight+weight_offset)));
+                                out_store += mul((short)(*(in+input_offset)), (short)(*(weight+weight_offset)));
+                                printf("in=%d weight=%d in_offset=%d weight_offset=%d\n", (short)(*(in+input_offset)), (short)(*(weight+weight_offset)), input_offset, weight_offset);
 
                             }
                             
@@ -148,14 +159,19 @@ void convolution() {
                 //out_store += weight[no][ni][0];
                 //out_store += *(*(*(weight+no)+ni));
 
-                out_store += (*(weight+weight_offset_store));
+                //out_store += (*(weight+weight_offset_store));
 
-                out_store >>= FRAC_BIT;
+                //out_store >>= FRAC_BIT;
                 //out_store = ((out_store>>31)<<15) + (out_store & 0X7FFF);
                 //out_store = ((out_store & 0X80000000)>>16) + (out_store & 0X7FFF);
                 // out_store = ((out_store & 0X200000)>>16) + (out_store & 0X7FFF);
                 //out_store = ((out_store & 0X200000)>>6) + (out_store & 0X7FFF);
-                out_store = (((out_store & 0X200000)>>6) + (out_store & 0X7FFF));
+                //out_store = (((out_store & 0X200000)>>6) + (out_store & 0X7FFF));
+
+                out_store = (((short)(((out_store>>FRAC_BIT) & 0X200000)>>6)) | ((short)((out_store>>FRAC_BIT) & 0X7FFF))) + (*(weight+weight_offset_store));
+
+                printf("=>%d %d\n", (*(weight+weight_offset_store)), (((short)(((out_store>>FRAC_BIT) & 0X200000)>>6)) | ((short)((out_store>>FRAC_BIT) & 0X7FFF))));
+
                 i++;
                 printf("%d:", i);
                 printf("%d\n", out_store);
@@ -218,14 +234,17 @@ void pooling() {
 
                 output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,pool_out_w) + x;
                 // input_offset = mul(no,mul(input_fm_w,input_fm_h));
-                input_offset = mul(no,mul(input_fm_w,input_fm_h));
+                //input_offset = mul(no,mul(input_fm_w,input_fm_h));
                  *(out+output_offset) = *(out + input_offset + mul(input_fm_w,(mul(y,stride)-pad)) + mul(x,stride)-pad);
 
                 for (py = 0; py < KERN_ATTR_POOL_KERN_SIZE; ++py)
                 {
                     for (px = 0; px < KERN_ATTR_POOL_KERN_SIZE; ++px)
                     {
-                        input_offset += mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride)+px-pad;
+                        //input_offset += mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride)+px-pad;
+
+                        input_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride)+px-pad;
+                        printf("%d", *(out+input_offset));
 
                         // if (((mul(stride,x) + px) >= pad) && ((mul(stride,x) + px) <= (pad+input_fm_w)) 
                         //  && ((mul(stride,y) + py) >= pad) && ((mul(stride,y) + py) <= (pad+input_fm_h))
@@ -256,8 +275,8 @@ void pooling() {
                 }
 
                 i++;
-                printf("%d:", i);
-                printf("%d output_offset =%d input_offset =%d\n", *(out+output_offset), output_offset, input_offset);
+                printf("\n%d:", i);
+                printf("%d output_offset =%d input_offset =%d x=%d\n ", *(out+output_offset), output_offset, input_offset, x);
             }
         }  
     }
