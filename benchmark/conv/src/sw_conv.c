@@ -211,7 +211,7 @@ void convolution() {
                 // *(*(*(out+no)+y)+x) = out_store;
                 (*(out+output_offset)) = (short)out_store;
 
-                //printf("output_offset=%d out=%d\n", output_offset, (*(out+output_offset)));
+                printf("output_offset=%d out=%d\n", output_offset, (*(out+output_offset)));
             }
         }
     }
@@ -353,9 +353,18 @@ int main()
     pooling();
     bench_done(&res);
     printf("Cycle cnt=%u\n", res.msec);
-    //printf("read_mem_cycle cnt=%u\n", res.read_mem_cycle);
-    //printf("write_mem_cycle cnt=%u\n", res.write_mem_cycle);
-    //printf("mem_cycle cnt=%u\n", res.mem_cycle);
+    printf("read_mem_cycle cnt=%u\n", res.read_mem_cycle);
+    printf("write_mem_cycle cnt=%u\n", res.write_mem_cycle);
+    printf("mem_cycle cnt=%u\n", res.mem_cycle);
+    printf("IF_cycle=\n", res.IF_cycle);
+    printf("IW_cycle=\n", res.IW_cycle);
+    printf("ID_EX_cycle=\n", res.ID_EX_cycle);
+    printf("RDW_cycle=\n", res.RDW_cycle);
+    printf("write_reg_file_cycle=\n", res.write_reg_file_cycle);
+    printf("Load_cycle=\n", res.Load_cycle);
+    printf("Store_cycle=\n", res.Store_cycle);
+    printf("MUL_cycle=\n", res.MUL_cycle);
+    printf("R_type_cycle=\n", res.R_type_cycle);
+    printf("wait_cycle=\n",res.wait_cycle);
     return 0;
 }
-
