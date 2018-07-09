@@ -67,6 +67,17 @@ module mips_cpu(
     always @(posedge clk) begin
         if (rst) begin
             cycle_cnt <= 32'd0;
+            read_mem_cnt <= 32'd0;
+            write_mem_cnt <= 32'd0;
+            IF_cnt <= 32'd0;
+            IW_cnt <= 32'd0;
+            ID_EX_cnt <= 32'd0;
+            RDW_cnt <= 32'd0;
+            write_reg_file_cnt <= 32'd0;
+            Load_cnt <= 32'd0;
+            Store_cnt <= 32'd0;
+            MUL_cnt <= 32'd0;
+            R_type_cnt <= 32'd0;
         end
         else begin
             cycle_cnt <= cycle_cnt + 32'd1;
