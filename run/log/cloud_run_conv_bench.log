@@ -1,6 +1,6 @@
 Starting xl2tpd (via systemctl): xl2tpd.service.
-Remote target: root@172.16.15.67
-Try to reboot 172.16.15.67
+Remote target: root@172.16.15.68
+Try to reboot 172.16.15.68
 Waiting for target reboot...
 Completed FPGA configuration
 Evaluating convolution benchmark suite...
@@ -9,21 +9,21 @@ Initializing read image data
 Initializing weights
 starting convolution
 starting pooling
-Cycle cnt=3285995863
-read_mem_cycle cnt=1100215
-write_mem_cycle cnt=350796
-mem_cycle cnt=3115582467
-IF_cycle=100801742
-IW_cycle=2979066018
-ID_EX_cycle=100801746
-RDW_cycle=34263871
-write_reg_file_cycle=69611868
-Load_cycle=1100222
-Store_cycle=87699
-MUL_cycle=0
-R_type_cycle=38766984
-wait_cycle=3013330470
-Hit good trap
-pass 1 / 1
+Cycle cnt=147630331
+read_mem_cycle cnt=235231
+write_mem_cycle cnt=192080
+mem_cycle cnt=140028474
+IF_cycle=4344606
+IW_cycle=128154923
+ID_EX_cycle=4344610
+RDW_cycle=7101847
+write_reg_file_cycle=3257449
+Load_cycle=235238
+Store_cycle=48020
+MUL_cycle=161445
+R_type_cycle=1756018
+wait_cycle=135257304
+Hit bad trap
+pass 0 / 1
 Stopping xl2tpd (via systemctl): xl2tpd.service.
-2018年 07月 13日 星期五 11:18:25 CST
+2018年 07月 13日 星期五 11:24:56 CST
