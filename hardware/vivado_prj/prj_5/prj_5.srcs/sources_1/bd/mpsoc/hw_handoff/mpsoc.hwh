@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Jul  8 18:17:30 2018" VIVADOVERSION="2017.2">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Mon Jul  9 10:52:52 2018" VIVADOVERSION="2017.2">
 
   <SYSTEMINFO ARCH="zynquplus" BOARD="interwiser:none:part0:2.0" DEVICE="xczu2eg" NAME="mpsoc" PACKAGE="sfva625" SPEEDGRADE="-1"/>
 

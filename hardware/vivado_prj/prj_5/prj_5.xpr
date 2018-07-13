@@ -3,10 +3,10 @@
 <!--                                                         -->
 <!-- Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="20" Path="/home/cod/Desktop/prj5_3/v1/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.xpr">
+<Project Version="7" Minor="20" Path="/home/cod/Desktop/prj5_3/success/prj5-dnn-harvardchen/hardware/vivado_prj/prj_5/prj_5.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
-    <Option Name="Id" Val="7add7c2970f2449cb9fb4de84c94b3fa"/>
+    <Option Name="Id" Val="00b863bba5ef4f2e9c2f22f1f8a4420d"/>
     <Option Name="Part" Val="xczu2eg-sfva625-1-e"/>
     <Option Name="CompiledLibDir" Val="$PCACHEDIR/compile_simlib"/>
     <Option Name="CompiledLibDirXSim" Val=""/>
@@ -84,7 +84,7 @@
       <File Path="$PSRCDIR/sources_1/imports/hdl/mpsoc_wrapper.v">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/bd/mpsoc/hdl/mpsoc_wrapper.v"/>
-          <Attr Name="ImportTime" Val="1531044969"/>
+          <Attr Name="ImportTime" Val="1531104680"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>

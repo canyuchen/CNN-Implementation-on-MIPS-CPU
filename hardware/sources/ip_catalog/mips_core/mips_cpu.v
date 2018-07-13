@@ -50,34 +50,107 @@ module mips_cpu(
 
 );
     reg     [31:0]  cycle_cnt; //counter of total cycles
-
+    reg     [31:0]  read_mem_cnt;
+    reg     [31:0]  write_mem_cnt;
+    wire    [31:0]  mem_cnt;
+    reg     [31:0]  IF_cnt;
+    reg     [31:0]  IW_cnt;
+    reg     [31:0]  ID_EX_cnt;
+    reg     [31:0]  RDW_cnt;
+    reg     [31:0]  write_reg_file_cnt;
+    reg     [31:0]  Load_cnt;
+    reg     [31:0]  Store_cnt;
+    reg     [31:0]  MUL_cnt;
+    reg     [31:0]  R_type_cnt;
+    wire    [31:0]  wait_cnt;
 
     always @(posedge clk) begin
         if (rst) begin
             cycle_cnt <= 32'd0;
+            read_mem_cnt <= 32'd0;
+            write_mem_cnt <= 32'd0;
+            IF_cnt <= 32'd0;
+            IW_cnt <= 32'd0;
+            ID_EX_cnt <= 32'd0;
+            RDW_cnt <= 32'd0;
+            write_reg_file_cnt <= 32'd0;
+            Load_cnt <= 32'd0;
+            Store_cnt <= 32'd0;
+            MUL_cnt <= 32'd0;
+            R_type_cnt <= 32'd0;
         end
         else begin
             cycle_cnt <= cycle_cnt + 32'd1;
+            if (state_next == IF) begin
+                IF_cnt <= IF_cnt + 32'd1;
+            end
+            if (state_next == IW) begin
+                IW_cnt <= IW_cnt + 32'd1;
+            end
+            if (state_next == ID_EX) begin
+                ID_EX_cnt <= ID_EX_cnt + 32'd1;
+                if ({Instruction[31:26]} == SPECIAL) begin
+                    R_type_cnt <= R_type_cnt + 32'd1;
+                end
+                if ({Instruction[31:26],Instruction[5:0]} == {SPECIAL2,MUL_FUNC}) begin
+                    MUL_cnt <= MUL_cnt + 32'd1;
+                end
+                if(Instruction[31:26] == LBU 
+                 || Instruction[31:26] == LB 
+                 || Instruction[31:26] == LW 
+                 || Instruction[31:26] == LWL
+                 || Instruction[31:26] == LWR 
+                 || Instruction[31:26] == LH 
+                 || Instruction[31:26] == LHU) begin
+                     Load_cnt <= Load_cnt + 32'd1; 
+                end
+                if (Instruction[31:26] == SW 
+                 || Instruction[31:26] == SH
+                 || Instruction[31:26] == SWL
+                 || Instruction[31:26] == SWR
+                 || Instruction[31:26] == SB) begin
+                    Store_cnt <= Store_cnt + 32'd1;
+                end
+                if ((Instruction[31:26] == JAL)
+                  ||(Instruction[31:26] == SPECIAL && Instruction[5:0] == JALR_FUNC)
+                  ) begin
+                    write_reg_file_cnt <= write_reg_file_cnt + 32'd1;
+                end
+            end
+            if (state_next == ST) begin
+                write_mem_cnt <= write_mem_cnt + 32'd1;
+            end
+            if (state_next == LD) begin
+                read_mem_cnt <= read_mem_cnt + 32'd1;
+            end
+            if (state_next == RDW) begin
+                RDW_cnt <= RDW_cnt + 32'd1;
+            end
+            if (state_next == WB) begin
+                write_reg_file_cnt <= write_reg_file_cnt + 32'd1;
+            end
         end
     end
 
+    assign mem_cnt = IF_cnt + write_mem_cnt + read_mem_cnt + IW_cnt + RDW_cnt;
+    assign wait_cnt = IW_cnt + RDW_cnt;
+
     assign mips_perf_cnt_0 = cycle_cnt;
-    assign mips_perf_cnt_1 = 32'd0;
-    assign mips_perf_cnt_2 = 32'd0;
-    assign mips_perf_cnt_3 = 32'd0;
-    assign mips_perf_cnt_4 = 32'd0;
-    assign mips_perf_cnt_5 = 32'd0;
-    assign mips_perf_cnt_6 = 32'd0;
-    assign mips_perf_cnt_7 = 32'd0;
-    assign mips_perf_cnt_8 = 32'd0;
-    assign mips_perf_cnt_9 = 32'd0;
-    assign mips_perf_cnt_10 = 32'd0;
-    assign mips_perf_cnt_11 = 32'd0;
-    assign mips_perf_cnt_12 = 32'd0;
-    assign mips_perf_cnt_13 = 32'd0;
+    assign mips_perf_cnt_1 = read_mem_cnt;
+    assign mips_perf_cnt_2 = write_mem_cnt;
+    assign mips_perf_cnt_3 = mem_cnt;
+    assign mips_perf_cnt_4 = IF_cnt;
+    assign mips_perf_cnt_5 = IW_cnt;
+    assign mips_perf_cnt_6 = ID_EX_cnt;
+    assign mips_perf_cnt_7 = RDW_cnt;
+    assign mips_perf_cnt_8 = write_reg_file_cnt;
+    assign mips_perf_cnt_9 = Load_cnt;
+    assign mips_perf_cnt_10 = Store_cnt;
+    assign mips_perf_cnt_11 = MUL_cnt;
+    assign mips_perf_cnt_12 = R_type_cnt;
+    assign mips_perf_cnt_13 = wait_cnt;
     assign mips_perf_cnt_14 = 32'd0;
     assign mips_perf_cnt_15 = 32'd0;
-
 
 
     //Branch Instructions
@@ -428,7 +501,6 @@ module mips_cpu(
                                               :((mips_alu_out_Result[1:0] == 2'b11) ? {mips_rf_out_rdata_2[31: 8],Read_data_i[31:24]}
                                               :  Read_data_i)));
                         default: mips_rf_in_wdata <= 32'd0;//mips_rf_in_wdata <= mips_rf_in_wdata;
-				
                     endcase
                 end
                 4'b1000://sltu

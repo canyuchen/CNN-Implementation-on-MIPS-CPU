@@ -89,15 +89,11 @@ void convolution() {
     unsigned y_offset = 0;
     unsigned ky_offset_1 = 0;
     unsigned ky_offset_2 = 0;
-
-    //unsigned conv_size_area = mul(conv_size.d2,conv_size.d3);
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     unsigned conv_size_area = mul(conv_size.d2,conv_size.d3);
     unsigned weight_size_area = mul(weight_size.d2,weight_size.d3);
     unsigned input_area = mul(input_fm_h,input_fm_w);
 
     int out_store;
-    int i = 0;
 
     conv_out_w = div(conv_out_w, stride);
     conv_out_h = div(conv_out_h, stride);
@@ -117,11 +113,9 @@ void convolution() {
 
     for (no = 0; no < wr_size.d1; ++no)
     {
-        //weight_offset = mul(2, mul(mul(no,conv_size.d0),(1+mul(weight_size.d2,weight_size.d3))));
         no_offset_1 = mul(no,conv_size.d0);
         no_offset_2 = mul(no, conv_size_area);
         weight_offset_store = mul(no_offset_1,(1+mul(weight_size.d2,weight_size.d3)));
-        // weight_offset_store = weight_offset;
 
         for (y = 0; y < conv_size.d2; ++y)
         {
@@ -135,83 +129,28 @@ void convolution() {
 
                 for (ni = 0; ni < conv_size.d0; ++ni)
                 {
-                    // weight_offset += mul(2, mul(ni,(1+mul(weight_size.d2,weight_size.d3))));
-                    // input_offset = mul(2, mul(mul(ni,input_fm_h),input_fm_w));
-                    //weight_offset += mul(ni,(1+mul(weight_size.d2,weight_size.d3)));
-
-                    //weight_offset += 1+mul(weight_size.d2,weight_size.d3);
-
-                    //input_offset = mul(mul(ni,input_fm_h),input_fm_w);
                     ni_offset_1 = mul(ni,(1+weight_size_area));
                     ni_offset_2 = mul(ni,input_area);
-
                     for (ky = 0; ky < weight_size.d2; ++ky)
                     {
                         ky_offset_1 = mul(weight_size.d3,ky);
                         ky_offset_2 = mul(input_fm_w,(product_y_stride + ky - pad));
                         for (kx = 0; kx < weight_size.d3; ++kx)
                         {
-                            // weight_offset += 1+mul(weight_size.d3,ky)+kx;
-                            // input_offset += mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;
-                            //放到条件里面，进一步减少乘法运算
-                            //!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-                            //weight_offset += 1+mul(weight_size.d3,ky)+kx;
-
-                            weight_offset = weight_offset_store + ni_offset_1 + 1 + ky_offset_1 + kx;
-                            
-                            //input_offset += mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;                             
+                            weight_offset = weight_offset_store + ni_offset_1 + 1 + ky_offset_1 + kx;                           
                             input_offset = ni_offset_2 + ky_offset_2 + product_x_stride + kx - pad;
-
-
-                            // if (((mul(stride,x) + kx) >= pad) && ((mul(stride,x) + kx) <= (pad+input_fm_w)) 
-                            //  && ((mul(stride,y) + ky) >= pad) && ((mul(stride,y) + ky) <= (pad+input_fm_h)))
-
                             if (((product_x_stride + kx) >= pad) && ((product_x_stride + kx) < (pad+input_fm_w)) 
                              && ((product_y_stride + ky) >= pad) && ((product_y_stride + ky) < (pad+input_fm_h)))
                             {
-                                // weight_offset += 1+mul(weight_size.d3,ky)+kx;
-                                // input_offset += mul(input_fm_w,(mul(y,stride)+ky-pad))+mul(x,stride)+kx-pad;                           
-
-                                //out_store += mul(in[ni][y][x], weight[no][ni][1 + mul(kx,ky)]); 
-                                //out_store += mul(*(*(*(in+ni)+y)+x), *(*(*(weight+no)+ni)+(1+mul(kx,ky))));
                                 out_store += mul((short)(*(in+input_offset)), (short)(*(weight+weight_offset)));
-                                //printf("in=%d weight=%d in_offset=%d weight_offset=%d\n", (short)(*(in+input_offset)), (short)(*(weight+weight_offset)), input_offset, weight_offset);
-
                             }
                             
                         }
                     }
                 }
-                //weight_offset = mul(mul(no,conv_size.d0),(1+mul(weight_size.d2,weight_size.d3)));
-
-                //out_store += weight[no][ni][0];
-                //out_store += *(*(*(weight+no)+ni));
-
-                //out_store += (*(weight+weight_offset_store));
-
-                //out_store >>= FRAC_BIT;
-                //out_store = ((out_store>>31)<<15) + (out_store & 0X7FFF);
-                //out_store = ((out_store & 0X80000000)>>16) + (out_store & 0X7FFF);
-                // out_store = ((out_store & 0X200000)>>16) + (out_store & 0X7FFF);
-                //out_store = ((out_store & 0X200000)>>6) + (out_store & 0X7FFF);
-                //out_store = (((out_store & 0X200000)>>6) + (out_store & 0X7FFF));
-
-                //out_store = (((short)(((out_store>>FRAC_BIT) & 0X200000)>>6)) | ((short)((out_store>>FRAC_BIT) & 0X7FFF))) + (*(weight+weight_offset_store));
                 out_store = (((short)(out_store >> FRAC_BIT) & 0x7fff) | ((short)(out_store >> 16) & 0x8000)) + (*(weight+weight_offset_store));
 
-                //printf("=>%d %d\n", (*(weight+weight_offset_store)), (((short)(out_store >> FRAC_BIT) & 0x7fff) + ((short)(out_store >> 16) & 0x8000)));
-
-                i++;
-                printf("%d:", i);
-                printf("%d\n", out_store);
-
-                //out[no][y][x] = out_store;
-                // *(*(*(out+no)+y)+x) = out_store;
                 (*(out+output_offset)) = (short)out_store;
-
-                //printf("output_offset=%d out=%d\n", output_offset, (*(out+output_offset)));
             }
         }
     }
@@ -243,7 +182,6 @@ void pooling() {
     unsigned pad_h_test_remain = pad_h_test - mul(div(pad_h_test, stride), stride);
 
     short no,x,y,px,py;
-    int i = 0;
 
     unsigned input_area = mul(input_fm_w,input_fm_h);
     unsigned pool_out_area = 0;
@@ -252,7 +190,6 @@ void pooling() {
     unsigned no_offset_2 = 0;
     unsigned product_y_stride = 0;
     unsigned product_x_stride = 0;
-    //unsigned product_1 = 0;
     unsigned product_2 = 0;
 
 
@@ -279,61 +216,25 @@ void pooling() {
         {
             y_offset = mul(y,pool_out_w);
             product_y_stride = mul(y,stride);
-            //product_1 = mul(input_fm_w,(product_y_stride - pad));
-
             for (x = 0; x < pool_out_w; ++x)
             {
                 product_x_stride = mul(x,stride);
-                //output_offset = mul(no,mul(input_fm_w,input_fm_h)) + mul(y,input_fm_w) + x;
-
                 output_offset = no_offset_1 + y_offset + x;
-                // input_offset = mul(no,mul(input_fm_w,input_fm_h));
-                //input_offset = mul(no,mul(input_fm_w,input_fm_h));
-                // *(out+output_offset) = *(out + input_offset + product_1 + product_x_stride - pad);
-                //*(out+output_offset) = *(out + no_offset + product_1 + product_x_stride - pad);
 
                 for (py = 0; py < KERN_ATTR_POOL_KERN_SIZE; ++py)
                 {
                     product_2 = mul(input_fm_w,(product_y_stride + py-pad));
                     for (px = 0; px < KERN_ATTR_POOL_KERN_SIZE; ++px)
                     {
-                        //input_offset += mul(input_fm_w,(mul(y,stride)+py-pad)) + mul(x,stride)+px-pad;
-
                         input_offset = no_offset_2 + product_2 + product_x_stride+px - pad;
-                        //printf("%d", *(out+input_offset));
-
-                        // if (((mul(stride,x) + px) >= pad) && ((mul(stride,x) + px) <= (pad+input_fm_w)) 
-                        //  && ((mul(stride,y) + py) >= pad) && ((mul(stride,y) + py) <= (pad+input_fm_h))
-
-                        // if (((mul(stride,x) + px) >= pad) && ((mul(stride,x) + px) < (pad+input_fm_w)) 
-                        //  && ((mul(stride,y) + py) >= pad) && ((mul(stride,y) + py) < (pad+input_fm_h))
-                        //  //&& (out[no][y][x] < out[no][mul(stride,y)+py][mul(stride,x)+px]))
-                        //  //&& (*(*(*(out+no)+y)+x) < *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px))))
-                        //  && ((*(out+output_offset)) < (*(out+input_offset))))
-                        // {
-                        //     //out[no][y][x] = out[no][mul(stride,y)+py][mul(stride,x)+px];
-                        //     //*(*(*(out+no)+y)+x) = *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px));
-                        //     *(out+output_offset) = *(out+input_offset);
-                        // }
-
-
                         if (((product_x_stride + px) >= pad) && ((product_x_stride + px) < (pad+input_fm_w)) 
                          && ((product_y_stride + py) >= pad) && ((product_y_stride + py) < (pad+input_fm_h))
-                         //&& (out[no][y][x] < out[no][mul(stride,y)+py][mul(stride,x)+px]))
-                         //&& (*(*(*(out+no)+y)+x) < *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px))))
                          && (((*(out+output_offset)) < (*(out+input_offset))) || ((px == 0) && (py == 0))))
                         {
-                            //out[no][y][x] = out[no][mul(stride,y)+py][mul(stride,x)+px];
-                            //*(*(*(out+no)+y)+x) = *(*(*(out+no)+(mul(stride,y)+py))+(mul(stride,x)+px));
                             *(out+output_offset) = *(out+input_offset);
                         }
                     }
                 }
-
-                i++;
-                printf("%d:", i);
-                //printf("%d output_offset =%d input_offset =%d x=%d\n ", *(out+output_offset), output_offset, input_offset, x);
-                printf("%d\n", *(out+output_offset));
             }
         }  
     }
@@ -346,6 +247,19 @@ int main()
 {
     Result res;
     res.msec = 0;
+    res.read_mem_cycle = 0;
+    res.write_mem_cycle = 0;
+    res.mem_cycle = 0;
+    res.IF_cycle = 0;
+    res.IW_cycle = 0;
+    res.ID_EX_cycle = 0;
+    res.RDW_cycle = 0;
+    res.write_reg_file_cycle = 0;
+    res.Load_cycle = 0;
+    res.Store_cycle = 0;
+    res.MUL_cycle = 0;
+    res.R_type_cycle = 0;
+    res.wait_cycle = 0;
     bench_prepare(&res);
     printf("starting convolution\n");
     convolution();
@@ -353,9 +267,18 @@ int main()
     pooling();
     bench_done(&res);
     printf("Cycle cnt=%u\n", res.msec);
-    //printf("read_mem_cycle cnt=%u\n", res.read_mem_cycle);
-    //printf("write_mem_cycle cnt=%u\n", res.write_mem_cycle);
-    //printf("mem_cycle cnt=%u\n", res.mem_cycle);
+    printf("read_mem_cycle cnt=%u\n", res.read_mem_cycle);
+    printf("write_mem_cycle cnt=%u\n", res.write_mem_cycle);
+    printf("mem_cycle cnt=%u\n", res.mem_cycle);
+    printf("IF_cycle=%u\n", res.IF_cycle);
+    printf("IW_cycle=%u\n", res.IW_cycle);
+    printf("ID_EX_cycle=%u\n", res.ID_EX_cycle);
+    printf("RDW_cycle=%u\n", res.RDW_cycle);
+    printf("write_reg_file_cycle=%u\n", res.write_reg_file_cycle);
+    printf("Load_cycle=%u\n", res.Load_cycle);
+    printf("Store_cycle=%u\n", res.Store_cycle);
+    printf("MUL_cycle=%u\n", res.MUL_cycle);
+    printf("R_type_cycle=%u\n", res.R_type_cycle);
+    printf("wait_cycle=%u\n",res.wait_cycle);
     return 0;
 }
-
