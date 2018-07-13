@@ -346,6 +346,19 @@ int main()
 {
     Result res;
     res.msec = 0;
+    res.read_mem_cycle = 0;
+    res.write_mem_cycle = 0;
+    res.mem_cycle = 0;
+    res.IF_cycle = 0;
+    res.IW_cycle = 0;
+    res.ID_EX_cycle = 0;
+    res.RDW_cycle = 0;
+    res.write_reg_file_cycle = 0;
+    res.Load_cycle = 0;
+    res.Store_cycle = 0;
+    res.MUL_cycle = 0;
+    res.R_type_cycle = 0;
+    res.wait_cycle = 0;
     bench_prepare(&res);
     printf("starting convolution\n");
     convolution();
