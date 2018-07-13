@@ -45,7 +45,7 @@ struct mem_addr {
 };
 
 int mul(short a,short b) {
-    int ans = mul_ll(a, b);
+    int ans = a*b;
     return ans;
 }
 
