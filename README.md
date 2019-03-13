@@ -1,7 +1,11 @@
-Project #5 (prj5) in Experiments of Computer Organization and Design (COD) in UCAS
+Project #5 (prj5) in Experiments of Computer Organization and Design (COD) in UCAS : CNN Implementation and Hardware Acceleration
 =====
-<changyisong@ict.ac.cn>
------
+
+## Core Features
+
+* Use C language to implement CNN algorithm applied to MIPS CPU and grasp the basic core thery of CNN (2-D convolution and pooling algorithms)
+* Optimize further the CPU design by adding more core calculation Instructions (such as multiply instruction) to the MIPS CPU and enhance the performance of the CNN algorithm running on the MIPS CPU
+* Integrate the CNN hardware accelerator (provided by the experiment) and MIPS CPU and grasp the principle of Hardware and Software Co-design Methods in SoC System
 
 ## Benchmarks Running on MIPS core
 
