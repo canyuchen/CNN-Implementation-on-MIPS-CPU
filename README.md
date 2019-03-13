@@ -7,6 +7,13 @@ Project #5 (prj5) in Experiments of Computer Organization and Design (COD) in UC
 * Optimize further the CPU design by adding more core calculation Instructions (such as multiply instruction) to the MIPS CPU and enhance the performance of the CNN algorithm running on the MIPS CPU
 * Integrate the CNN hardware accelerator (provided by the experiment) and MIPS CPU and grasp the principle of Hardware and Software Co-design Methods in SoC System
 
+## Implementation
+
+* 2-D Convolution :
+![dnn-1](/resources/dnn-1.png)
+* Max Pooling :
+![dnn-2](/resources/dnn-2.png)
+
 ## Benchmarks Running on MIPS core
 
 | **Serial Number** | **Benchmark Name** | **Description** |
