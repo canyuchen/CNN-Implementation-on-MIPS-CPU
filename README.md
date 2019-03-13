@@ -14,6 +14,15 @@ Project #5 (prj5) in Experiments of Computer Organization and Design (COD) in UC
 * Max Pooling :
 ![dnn-2](/resources/dnn-2.png)
 
+## Test
+
+* CNN algorithm running on CPU without accelerator
+![dnn-3](/resources/dnn-3.png)
+
+* CNN algorithm running on CPU with accelerator
+![dnn-4](/resources/dnn-4.png)
+
+
 ## Benchmarks Running on MIPS core
 
 | **Serial Number** | **Benchmark Name** | **Description** |
